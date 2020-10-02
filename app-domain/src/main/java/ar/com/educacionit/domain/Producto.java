@@ -9,6 +9,16 @@ public class Producto {
 	private Float precio;
 	
 	private String codigo;
+	
+	private Long tipoProducto;
+	
+	public Producto(Long id, String titulo, Float precio, String codigo, Long tipoProducto) {
+		this.id = id;
+		this.titulo = titulo;
+		this.precio = precio;
+		this.codigo = codigo;
+		this.tipoProducto = tipoProducto;
+	}
 
 	public Producto(Long id, String titulo, Float precio, String codigo) {
 		this.id = id;
@@ -21,6 +31,14 @@ public class Producto {
 		this.titulo = titulo;
 		this.precio = precio;
 		this.codigo = codigo;
+	}
+
+
+	public Producto(String titulo, Float precio, String codigo, Long tipoProducto) {
+		this.titulo = titulo;
+		this.precio = precio;
+		this.codigo = codigo;
+		this.tipoProducto = tipoProducto;
 	}
 
 	public Long getId() {
@@ -53,6 +71,16 @@ public class Producto {
 
 	public void setCodigo(String codigo) {
 		this.codigo = codigo;
+	}
+	
+	
+
+	public Long getTipoProducto() {
+		return tipoProducto;
+	}
+
+	public void setTipoProducto(Long tipoProducto) {
+		this.tipoProducto = tipoProducto;
 	}
 
 	@Override

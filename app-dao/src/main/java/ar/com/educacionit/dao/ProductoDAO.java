@@ -1,70 +1,76 @@
 package ar.com.educacionit.dao;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
+import java.sql.Statement;
+
 import ar.com.educacionit.dao.exeptions.DuplicatedException;
 import ar.com.educacionit.dao.exeptions.GenericDAOException;
 import ar.com.educacionit.dao.exeptions.NonExistException;
 import ar.com.educacionit.domain.Producto;
+import ar.com.educacionit.jdbc.AdministradorConexiones;
+
 //ctrl+shift+o
 public class ProductoDAO {
-	
-	static int contadorNuevosProducto = 0;
 
-	public static Producto createProducto() throws DuplicatedException {
-		
-		//magia para acceder a la db
-		Producto producto = new Producto("IRON MAN3", 1500f, "0001");
-		
-		//insert into producto ....
-		
-		producto.setId(1L);
-		
-		ProductoDAO.contadorNuevosProducto++;
+	public static Producto createProducto(Producto producto) throws DuplicatedException, GenericDAOException {
 
-		if(contadorNuevosProducto %2 == 0) {
-			throw new DuplicatedException("El producto con codigo:" + producto.getCodigo() +" ya existe");
+		Connection connection;
+		// Se controla la excepcion en caso que exista
+		try {
+			connection = AdministradorConexiones.obtenerConexion();
+		} catch (Exception e) {
+			throw new GenericDAOException(e.getMessage(), e);
 		}
+		// Crear el statement: "SELECT * FROM..."
+		String sql = "INSERT INTO `jsweb-septiembre`.`productos` (`titulo`, `precio`, `codigo`, `tipo_producto`) "
+				+ "VALUES ('"+ producto.getTitulo() + "', '" + producto.getPrecio() + "', '" + producto.getCodigo() + "', '" + producto.getTipoProducto() + "');";
 		
-		return producto;
+		Statement st;
+		try {
+			st = connection.createStatement();
+			int resultado = st.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+			// Obteniendo resultados
+			ResultSet rs = st.getGeneratedKeys();
+			Long idGenerado = null;
+			if (rs.next()) {
+				idGenerado = rs.getLong(1);
+			}
+			producto.setId(idGenerado);
+		} catch (SQLIntegrityConstraintViolationException e) {
+			throw new DuplicatedException(e.getMessage(), e);
+		} catch (SQLException e) {
+			throw new GenericDAOException(e.getMessage(), e);
+		} finally {
+			// Al final se cierra la conexion
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				throw new GenericDAOException("No se pudo cerrar la conexion, verifique en la db las conexiones posibles", e);
+			}
+		}
+
+		return null;
 	}
-	
-	public static Producto createProducto(Producto producto) throws DuplicatedException, GenericDAOException{
-		
-		//insert into producto ....
-		
-		// producto.setId(1L);
-		
-		ProductoDAO.contadorNuevosProducto++;
 
-		if(producto.getCodigo().equals("0002")) {
-			throw new GenericDAOException("Error inesperado al intentar grabar el producto con codigo=" + producto.getCodigo());
-		}
-		if(contadorNuevosProducto %2 == 0) {
-			throw new DuplicatedException("El producto con codigo:" + producto.getCodigo() +" ya existe");
-		}
-		
-		return producto;
+	private static Producto Producto(Long idGenerado, String titulo, Float precio, String codigo, Long tipoProducto) {
+		// TODO Auto-generated method stub
+		return null;
 	}
+
 
 	public static void deleteProducto(Long id) throws NonExistException {
-		
-		//delete from tabla where ....
-		if(id < 1000) {
-			throw new NonExistException("El id : " + id + " no existe en la base de datos");
-		}
+
 	}
 
 	public Producto get(Long id) throws GenericDAOException {
-		
-		// TODO Auto-generated method stub
-		//select * from producto
-		
-		//magia para acceder a la db
-		Producto producto = new Producto(id, "IRON MAN3", 1500f, "0001");
-		
-		if(id < 10) {
-			throw new GenericDAOException("Error inesperado, obtiendo el producto id="+id);
-		}
-		
-		return producto;
+
+		return null;
+	}
+
+	public Producto[] obtenerTodos() throws GenericDAOException {
+		return null;
 	}
 }
